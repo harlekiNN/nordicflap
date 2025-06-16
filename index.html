@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Raven</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="game-container">
+        <div id="scoreDisplay" class="score-display">Score: 0</div>
+        <canvas id="gameCanvas" width="320" height="480"></canvas>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="message-box flex flex-col items-center gap-4" style="display: flex;">
+            <h1 class="text-3xl font-extrabold text-gray-800">Flappy Raven!</h1>
+            <p class="text-lg text-gray-600">Click or press Space to flap.</p>
+            <div id="loadingText" class="loading-text">Loading assets...</div>
+            <button id="startButton" class="start-button" disabled>Start Game</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="message-box flex flex-col items-center gap-4" style="display: none;">
+            <h2 class="text-3xl font-extrabold text-red-600">Game Over!</h2>
+            <p id="finalScore" class="text-xl text-gray-700">Your Score: 0</p>
+            <button id="restartButton" class="restart-button">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js" defer></script>
+</body>
+</html>
