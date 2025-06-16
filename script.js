@@ -33,8 +33,10 @@ function loadAssets() {
         const img = new Image();
         img.src = assetSources[key];
         
-        // Set crossOrigin for images loaded from different origins to avoid canvas tainting issues
-        img.crossOrigin = "anonymous"; 
+        // Removed: img.crossOrigin = "anonymous"; 
+        // This line caused CORS errors because the server hosting the images
+        // does not send the required Access-Control-Allow-Origin header.
+        // For simple drawing (not reading pixel data), it's not strictly needed.
 
         assets[key] = img; // Store the image object
 
@@ -66,7 +68,7 @@ function loadAssets() {
 // Bird properties
 const bird = {
     x: 50,
-    y: 0, // Initialized in resetGame based on ground height
+    y: 0, // Will be initialized correctly in resetGame based on ground height
     radius: 15, // Radius for collision detection (used if no bird image)
     velocity: 0,
     width: 40, // Rendered width for the raven image
@@ -86,10 +88,11 @@ const PIPE_INTERVAL = 3000;
 let pipes = [];
 let lastPipeTime = 0;
 
-// Ground properties (height will be set dynamically based on image naturalHeight)
+// Ground properties (height will be fixed now)
+const GROUND_HEIGHT = 50; // Fixed height for the ground strip to prevent stretching
 const ground = {
     x: 0,
-    height: 0, // Will be set to assets.ground.naturalHeight or a fallback
+    height: GROUND_HEIGHT, // Always use the fixed height
     speed: PIPE_SPEED,
 };
 
@@ -128,14 +131,16 @@ function drawPipe(pipe) {
     // Draw bottom pipe image, calculating its height to stop exactly at the ground level
     if (assets.pipeBottom && assets.pipeBottom.complete && assets.pipeBottom.naturalWidth > 0) {
         const bottomPipeY = pipe.y + PIPE_GAP;
-        const bottomPipeHeight = canvas.height - bottomPipeY - ground.height;
+        // Corrected calculation: height from bottomPipeY down to the top of the ground
+        const bottomPipeHeight = (canvas.height - ground.height) - bottomPipeY;
         if (bottomPipeHeight > 0) { // Only draw if height is positive
              ctx.drawImage(assets.pipeBottom, pipe.x, bottomPipeY, PIPE_WIDTH, bottomPipeHeight);
         }
     } else {
         // Fallback to drawing colored rectangle
         ctx.fillStyle = '#6B8E23';
-        ctx.fillRect(pipe.x, pipe.y + PIPE_GAP, PIPE_WIDTH, canvas.height - (pipe.y + PIPE_GAP) - ground.height);
+        // Corrected fallback calculation as well
+        ctx.fillRect(pipe.x, pipe.y + PIPE_GAP, PIPE_WIDTH, (canvas.height - ground.height) - (pipe.y + PIPE_GAP));
     }
 
     // Draw outlines (optional, only for fallbacks if images don't load)
@@ -145,7 +150,7 @@ function drawPipe(pipe) {
         ctx.strokeRect(pipe.x, 0, PIPE_WIDTH, pipe.y);
     }
     if (!assets.pipeBottom || !assets.pipeBottom.complete || assets.pipeBottom.naturalWidth === 0) {
-        ctx.strokeRect(pipe.x, pipe.y + PIPE_GAP, PIPE_WIDTH, canvas.height - (pipe.y + PIPE_GAP) - ground.height);
+        ctx.strokeRect(pipe.x, pipe.y + PIPE_GAP, PIPE_WIDTH, (canvas.height - ground.height) - (pipe.y + PIPE_GAP));
     }
 }
 
@@ -158,25 +163,18 @@ function drawPipes() {
 
 // Draw the scrolling ground
 function drawGround() {
-    // Determine ground height: use natural height if loaded, otherwise fallback
-    if (assets.ground && assets.ground.naturalHeight > 0) {
-        ground.height = assets.ground.naturalHeight;
-    } else {
-        ground.height = 50; // Default fallback height
-    }
+    // Ground height is now fixed by GROUND_HEIGHT constant
+    ground.height = GROUND_HEIGHT; 
 
     if (assets.ground && assets.ground.complete && assets.ground.naturalWidth > 0) {
         const groundY = canvas.height - ground.height;
         
         // Draw ground multiple times to cover the width and ensure seamless looping
-        // Start drawing from currentX (which can be negative for scrolling)
         let currentDrawX = ground.x;
-        // Draw ground tiles until they cover the canvas width
         while (currentDrawX < canvas.width) {
             ctx.drawImage(assets.ground, currentDrawX, groundY, assets.ground.naturalWidth, ground.height);
             currentDrawX += assets.ground.naturalWidth;
         }
-        // Draw one more tile before the start to cover negative x
         if (ground.x > -assets.ground.naturalWidth) {
             ctx.drawImage(assets.ground, ground.x - assets.ground.naturalWidth, groundY, assets.ground.naturalWidth, ground.height);
         }
@@ -190,12 +188,8 @@ function drawGround() {
 
 // Generate a new pipe, ensuring it respects the ground height
 function generatePipe() {
-    // Ensure ground height is determined before calculating pipe position
-    if (assets.ground && assets.ground.naturalHeight > 0) {
-        ground.height = assets.ground.naturalHeight;
-    } else {
-        ground.height = 50; // Fallback default height
-    }
+    // Ground height is now fixed by GROUND_HEIGHT constant
+    ground.height = GROUND_HEIGHT;
     
     const minTopPipeHeight = 50;
     // The maximum height for the top pipe, adjusted for pipe gap and ground height
@@ -225,8 +219,6 @@ function updateGame(currentTime) {
 
     // Ground movement and looping
     ground.x -= ground.speed;
-    // The modulo operator ensures seamless looping by resetting x when it goes beyond one image width
-    // Handle negative values of ground.x correctly for repeating background
     if (assets.ground && assets.ground.naturalWidth > 0) {
         ground.x = (ground.x % assets.ground.naturalWidth + assets.ground.naturalWidth) % assets.ground.naturalWidth;
     } else {
@@ -240,7 +232,7 @@ function updateGame(currentTime) {
         bird.velocity = 0;
     }
     // Collision with ground
-    // Use ground.height for collision
+    // Use ground.height for collision (which is now fixed)
     if (bird.y + bird.radius > canvas.height - ground.height) {
         endGame();
         return;
@@ -321,8 +313,9 @@ function flap() {
 
 // Reset game state
 function resetGame() {
-    // This function handles starting a new game, including asset loading and initial setup.
-    // It will be called on game start/restart.
+    // Ground height is now fixed by GROUND_HEIGHT constant
+    ground.height = GROUND_HEIGHT; 
+
     bird.velocity = 0;
     pipes = [];
     score = 0;
@@ -341,13 +334,7 @@ function resetGame() {
     loadingText.style.display = 'block';
     
     loadAssets().then(() => {
-        // After assets are loaded, set ground height based on its natural height
-        if (assets.ground && assets.ground.naturalHeight > 0) {
-            ground.height = assets.ground.naturalHeight;
-        } else {
-            ground.height = 50; // Fallback default height if ground image failed
-        }
-        
+        // After assets are loaded, ground height is already fixed by GROUND_HEIGHT
         // Now that ground.height is determined, set bird's initial Y
         bird.y = canvas.height / 2 - ground.height / 2;
 
@@ -359,7 +346,7 @@ function resetGame() {
         loadingText.textContent = "Error loading assets. Check console for details.";
         startButton.disabled = false; // Allow user to start even with errors
         // Ensure a default ground height if loading failed to prevent NaN or undefined
-        if (ground.height === 0) ground.height = 50; 
+        if (ground.height === 0) ground.height = GROUND_HEIGHT; // Use GROUND_HEIGHT as fallback
         bird.y = canvas.height / 2 - ground.height / 2;
         draw(); // Draw with fallbacks if assets failed
     });
