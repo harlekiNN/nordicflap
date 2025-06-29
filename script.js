@@ -14,7 +14,28 @@ const startButton = document.getElementById('startButton');
 const restartButton = document.getElementById('restartButton');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const finalScoreDisplay = document.getElementById('finalScore');
+const deathTitle = document.getElementById('deathTitle');
 const loadingText = document.getElementById('loadingText');
+
+const playerNameInput = document.getElementById('playerName');
+const saveScoreButton = document.getElementById('saveScoreButton');
+
+const whisperText = document.getElementById('whisperText');
+const whispers = [
+  "Die Schatten rufen dich...",
+  "Nur die Stärksten erreichen Valhalla.",
+  "Loki beobachtet deinen Flug.",
+  "Der Wind trägt alte Stimmen.",
+  "Deine Federn flüstern Runen.",
+  "Hugin sieht, Munin vergisst nicht.",
+  "Die Nebel von Helheim nähern sich.",
+  "Dein Flug hallt durch die Welten.",
+  "Ein Fehler, und du fällst ewig.",
+  "Yggdrasil neigt sich mit dir."
+];
+let lastWhisperScore = 0;
+
+
 
 // --- Asset Loading ---
 const assets = {};
@@ -201,6 +222,8 @@ function generatePipe() {
     const topPipeHeight = Math.floor(Math.random() * (actualMaxTopPipeHeight - minTopPipeHeight + 1)) + minTopPipeHeight;
 
     pipes.push({
+        top: topPipeHeight,
+        bottom: topPipeHeight + PIPE_GAP,
         x: canvas.width,
         y: topPipeHeight,
         width: PIPE_WIDTH,
@@ -216,6 +239,34 @@ function updateGame(currentTime) {
     // Update bird velocity and position
     bird.velocity += GRAVITY;
     bird.y += bird.velocity;
+
+    // Kollisionsprüfung
+    if (bird.y + bird.height >= canvas.height - ground.height) {
+        endGame("Im Schlamm von Niflheim versunken.");
+        return;
+    }
+
+    if (bird.y <= 0) {
+        endGame("Vom Himmelswind zerschmettert.");
+        return;
+    }
+
+    for (let i = 0; i < pipes.length; i++) {
+        const pipe = pipes[i];
+        if (
+            bird.x < pipe.x + pipe.width &&
+            bird.x + bird.width > pipe.x &&
+            (bird.y < pipe.top || bird.y + bird.height > pipe.bottom)
+        ) {
+            if (bird.y < pipe.top) {
+            endGame("Vom Himmelswind zerschmettert.");
+        } else {
+            endGame("Von Midgards Wurzeln erschlagen.");
+        }
+            return;
+        }
+    }
+
 
     // Ground movement and looping
     ground.x -= ground.speed;
@@ -234,7 +285,6 @@ function updateGame(currentTime) {
     // Collision with ground
     // Use ground.height for collision (which is now fixed)
     if (bird.y + bird.radius > canvas.height - ground.height) {
-        endGame();
         return;
     }
 
@@ -256,13 +306,23 @@ function updateGame(currentTime) {
             (bird.y - bird.radius < pipe.y || // Bird's top side past top pipe's bottom
                 bird.y + bird.radius > pipe.y + pipe.gap) // Bird's bottom side past bottom pipe's top
         ) {
-            endGame();
             return;
         }
 
         // Check if bird has passed pipe for scoring
         if (pipe.x + pipe.width < bird.x && !pipe.passed) {
             score++;
+
+            if (score % 5 === 0 && score !== lastWhisperScore) {
+                const msg = whispers[Math.floor(Math.random() * whispers.length)];
+                whisperText.textContent = msg;
+                whisperText.style.display = 'block';
+                setTimeout(() => {
+                    whisperText.style.display = 'none';
+                }, 2000);
+                lastWhisperScore = score;
+            }
+
             scoreDisplay.textContent = `Score: ${score}`;
             pipe.passed = true;
         }
@@ -313,6 +373,7 @@ function flap() {
 
 // Reset game state
 function resetGame() {
+    lastWhisperScore = 0;
     // Ground height is now fixed by GROUND_HEIGHT constant
     ground.height = GROUND_HEIGHT; 
 
@@ -353,10 +414,14 @@ function resetGame() {
 }
 
 // End game state
-function endGame() {
+function endGame(deathCause) {
     gameOver = true;
     gameRunning = false;
-    finalScoreDisplay.textContent = `Your Score: ${score}`;
+    
+    deathTitle.textContent = deathCause || "Du wurdest von Hel geholt";
+finalScoreDisplay.textContent = `Dein Flug endete bei einem Runenwert von: ${score}`;
+document.getElementById('nameEntry').style.display = 'flex';
+
     gameOverScreen.style.display = 'flex';
     cancelAnimationFrame(animationFrameId); // Stop the animation loop
 }
@@ -367,7 +432,7 @@ startButton.addEventListener('click', () => {
         startScreen.style.display = 'none';
         gameOverScreen.style.display = 'none';
         gameRunning = true;
-        lastPipeTime = performance.now(); // Initialize last pipe time
+        lastPipeTime = performance.now() - (PIPE_INTERVAL - 500); // Initialize last pipe time
         animationFrameId = requestAnimationFrame(gameLoop);
     }
 });
@@ -387,3 +452,19 @@ document.addEventListener('keydown', (e) => {
 
 // Initial setup - load assets first, then enable start button
 resetGame();
+
+
+function saveScoreWithName(name, score) {
+    let scores = JSON.parse(localStorage.getItem('flappyRavenScores')) || [];
+    scores.push({ name, score });
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, 5);
+    localStorage.setItem('flappyRavenScores', JSON.stringify(scores));
+}
+
+
+saveScoreButton.addEventListener('click', () => {
+    const name = playerNameInput.value.trim() || "Unbekannt";
+    saveScoreWithName(name, score);
+    window.location.href = 'scoreboard.html';
+});

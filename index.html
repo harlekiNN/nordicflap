@@ -1,37 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Raven</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Link to external CSS file -->
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flappy Raven</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Link zur angepassten CSS-Datei -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="game-container">
-        <div id="scoreDisplay" class="score-display">Score: 0</div>
-        <canvas id="gameCanvas" width="320" height="480"></canvas>
+  <div class="game-container">
+    <div id="scoreDisplay" class="score-display">Runenwert: 0</div>
+    <canvas id="gameCanvas" width="320" height="480"></canvas>
 
-        <!-- Start Screen -->
-        <div id="startScreen" class="message-box flex flex-col items-center gap-4" style="display: flex;">
-            <h1 class="text-3xl font-extrabold text-gray-800">Flappy Raven!</h1>
-            <p class="text-lg text-gray-600">Click or press Space to flap.</p>
-            <div id="loadingText" class="loading-text">Loading assets...</div>
-            <button id="startButton" class="start-button" disabled>Start Game</button>
-        </div>
+<!-- Whisper Text Overlay -->
+<div id="whisperText" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-xl font-semibold text-white/50 drop-shadow-lg z-50 whitespace-nowrap" 
+     style="display: none; font-family: 'serif';">
+</div>
 
-        <!-- Game Over Screen -->
-        <div id="gameOverScreen" class="message-box flex flex-col items-center gap-4" style="display: none;">
-            <h2 class="text-3xl font-extrabold text-red-600">Game Over!</h2>
-            <p id="finalScore" class="text-xl text-gray-700">Your Score: 0</p>
-            <button id="restartButton" class="restart-button">Play Again</button>
-        </div>
+    <!-- Start-Screen -->
+    <div id="startScreen" class="message-box flex flex-col items-center gap-4" style="display: flex;">
+      <h1 class="text-3xl font-extrabold text-gray-800 uppercase tracking-wide">Rabenflug beginnt</h1>
+      <p class="text-lg text-gray-600 italic">Tippe oder drücke die Leertaste, um deine Reise zu starten.</p>
+      <div id="loadingText" class="loading-text">Runen werden beschworen...</div>
+      <button id="startButton" class="start-button" disabled>Losfliegen</button>
     </div>
 
-    <!-- Link to external JavaScript file -->
-    <script src="script.js" defer></script>
+    <!-- Game Over Screen -->
+<div id="gameOverScreen" class="message-box flex flex-col items-center gap-4" style="display: none;">
+<h2 id="deathTitle" class="text-3xl font-extrabold text-red-600 uppercase"></h2>
+  <p id="finalScore" class="text-xl text-gray-700">Dein Flug endete bei einem Runenwert von:</p>
+
+  <div id="nameEntry" class="flex flex-col items-center gap-2 mt-2">
+    <input type="text" id="playerName" placeholder="Dein Name" maxlength="20"
+           class="px-4 py-2 rounded-md border border-gray-400 text-center w-full max-w-[200px]" />
+    <button id="saveScoreButton" class="start-button">Score speichern</button>
+  </div>
+
+  <div id="scoreboard" class="text-left w-full mt-4 hidden">
+	<h3 class="text-lg font-bold text-gray-100 mb-2">Runen-Tafeln (Top 5):</h3>
+	<ol id="scoreList" class="list-decimal pl-5 text-gray-100 text-base space-y-1"></ol>
+  </div>
+
+  <button id="restartButton" class="restart-button">Erneut wagen</button>
+</div>
+
+  </div>
+
+  <script src="script.js" defer></script>
 </body>
 </html>

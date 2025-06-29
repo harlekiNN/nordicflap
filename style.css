@@ -1,72 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f0f8ff; /* Light blue background */
+    background-color: #0f172a; /* Tiefes Nachtblau */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    overflow: hidden; /* Prevent scrolling */
+    overflow: hidden;
 }
+
 canvas {
-    background-color: #70c5ce; /* Sky blue (fallback if background image fails) */
-    border: 4px solid #4a5568; /* Darker border */
+    background-color: #1e293b; /* fallback für Spielhintergrund */
+    border: 4px solid #475569;
     border-radius: 12px;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
     display: block;
 }
+
 .game-container {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px; /* Space between canvas and button */
+    gap: 16px;
 }
+
+/* Mystisch-nordische Overlay-Boxen */
 .message-box {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.9);
+    background: linear-gradient(145deg, rgba(36, 32, 28, 0.92), rgba(68, 62, 50, 0.85));
     padding: 2rem 3rem;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border: 3px double #4b5563;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), inset 0 0 6px rgba(255, 255, 255, 0.05);
     z-index: 10;
 }
-.start-button, .restart-button {
-    background: linear-gradient(145deg, #4CAF50, #45a049); /* Green gradient */
-    color: white;
+
+/* Leuchttext für Titel */
+.message-box h1,
+.message-box h2 {
+    color: #e2e8f0;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-shadow:
+        0 0 4px rgba(255, 255, 255, 0.2),
+        0 0 8px rgba(173, 216, 230, 0.2);
+}
+
+/* Fließtext */
+.message-box p {
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    font-style: italic;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Buttons in Stein-/Eisenoptik */
+.start-button,
+.restart-button {
+    background: linear-gradient(145deg, #2d2d2d, #1c1c1c);
+    color: #f1f5f9;
     padding: 0.75rem 2rem;
-    border-radius: 9999px; /* Fully rounded */
+    border-radius: 9999px;
     font-size: 1.25rem;
     font-weight: bold;
-    border: none;
-    cursor: pointer;
+    border: 2px solid #4b5563;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.3),
+        inset 0 0 5px rgba(255, 255, 255, 0.05);
+    cursor: pointer;
 }
-.start-button:hover, .restart-button:hover {
-    background: linear-gradient(145deg, #45a049, #3d8f41);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+
+.start-button:hover,
+.restart-button:hover {
+    background: linear-gradient(145deg, #3f3f3f, #2a2a2a);
+    transform: scale(1.03);
+    box-shadow:
+        0 6px 10px rgba(0, 0, 0, 0.4),
+        inset 0 0 6px rgba(255, 255, 255, 0.08);
 }
-.start-button:active, .restart-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+.start-button:active,
+.restart-button:active {
+    transform: scale(0.98);
+    box-shadow: none;
 }
+
+/* Scoreanzeige */
 .score-display {
     position: absolute;
     top: 1rem;
-    color: #fff;
+    color: #fcd34d;
     font-size: 2rem;
     font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
     z-index: 5;
 }
+
+/* Ladeanzeige */
 .loading-text {
-    color: #4a5568;
-    font-size: 1.5rem;
-    font-weight: bold;
+    color: #a5b4fc;
+    font-size: 1rem;
+    font-style: italic;
     margin-top: 1rem;
+}
+
+/* scoreboard */
+
+#scoreboard h3 {
+    color: #f1f5f9; /* Helles Grau für den Titel "Runen-Tafeln" */
+}
+
+#scoreList li {
+    color: #ffffff;
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    letter-spacing: 0.5px;
 }

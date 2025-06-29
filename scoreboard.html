@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Runen-Tafeln</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="game-container">
+    <div id="scoreDisplay" class="score-display">Runenwert: 0</div>
+    <canvas id="gameCanvas" width="320" height="480"></canvas>
+
+    <!-- Scoreboard Overlay im Stil des Startbildschirms -->
+    <div id="scoreboardScreen" class="message-box flex flex-col items-center gap-4" style="display: flex;">
+      <h1 class="text-3xl font-extrabold text-gray-100 uppercase tracking-wide">Runen-Tafeln</h1>
+      <ul id="scoreList" class="pl-5 text-gray-100 text-base space-y-1 text-left"></ul>
+      <button onclick="window.location.href='index.html'" class="restart-button">Zurück</button>
+    </div>
+  </div>
+
+  <script>
+    const scores = JSON.parse(localStorage.getItem('flappyRavenScores')) || [];
+    const scoreList = document.getElementById('scoreList');
+    scores.sort((a, b) => b.score - a.score);
+    scores.slice(0, 5).forEach((entry, index) => {
+      const li = document.createElement('li');
+      li.textContent = `#${index + 1} – ${entry.name}: ${entry.score} Punkte`;
+      scoreList.appendChild(li);
+    });
+  </script>
+</body>
+</html>
