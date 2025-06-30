@@ -126,3 +126,45 @@ canvas {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
     letter-spacing: 0.5px;
 }
+
+/* Overlay genau auf die Game-Container-Größe beschränken */
+.game-container {
+  position: relative;
+  width: 320px;
+  height: 480px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* Alle Message-Boxen (Start, Character, Game-Over) zentriert und begrenzt */
+.message-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 300px;
+  max-height: 90%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+
+/* Prevent horizontal scrollbar and adjust vertical overflow */
+.message-box {
+  overflow-y: auto;
+  overflow-x: hidden; /* hide horizontal scrollbar */
+  max-height: 90%;
+}
+
+/* Specific Game Over screen: no scrollbars */
+#gameOverScreen {
+  overflow: hidden;
+}
+
+/* Smaller button padding and font-size to fit content */
+.message-box button {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+}

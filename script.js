@@ -6,6 +6,7 @@ const ctx = canvas.getContext('2d');
 let gameRunning = false;
 let gameOver = false;
 let score = 0;
+let selectedCharacter = 'raven';
 
 // UI elements
 const startScreen = document.getElementById('startScreen');
@@ -45,6 +46,8 @@ const assetSources = {
     pipeTop: 'assets/obstacle_top_column.png',
     raven: 'assets/raven_generated.png',
     ravenFlap: 'assets/raven_generated_flap.png',
+    valkyrie: 'assets/valkyrie_wings_down.png',
+    valkyrieFlap: 'assets/valkyrie_wings_up.png',
     ground: 'assets/ground_strip.png',
 };
 
@@ -94,7 +97,8 @@ const bird = {
     velocity: 0,
     width: 40, // Rendered width for the raven image
     height: 30, // Rendered height for the raven image
-    currentFrame: 'raven', // To track which raven image to draw ('raven' or 'ravenFlap')
+    character: 'raven',        // selected character key
+    currentFrame: 'raven',     // starts with idle frame of selected character
 };
 
 // Game physics constants
@@ -360,13 +364,11 @@ function gameLoop(currentTime) {
 function flap() {
     if (gameRunning && !gameOver) {
         bird.velocity = FLAP_STRENGTH;
-        bird.currentFrame = 'ravenFlap'; // Switch to flapping raven image
-        // After a short delay, switch back to the normal raven image
+        bird.currentFrame = bird.character + 'Flap';  // Use selected character's flap image
         setTimeout(() => {
-            bird.currentFrame = 'raven';
-        }, 100); // 100ms delay for flap animation
+            bird.currentFrame = bird.character;  // Revert to idle frame of selected character
+        }, 100);
     } else if (gameOver) {
-        // If game is over, clicking or spacebar acts as restart
         resetGame();
     }
 }
@@ -383,7 +385,8 @@ function resetGame() {
     scoreDisplay.textContent = `Score: ${score}`;
     gameOver = false;
     gameRunning = false;
-    bird.currentFrame = 'raven'; // Ensure bird starts with normal raven image
+    bird.character = selectedCharacter;
+    bird.currentFrame = selectedCharacter; // Ensure bird starts with normal raven image
     ground.x = 0; // Reset ground position for new game
 
     startScreen.style.display = 'flex';
@@ -467,4 +470,85 @@ saveScoreButton.addEventListener('click', () => {
     const name = playerNameInput.value.trim() || "Unbekannt";
     saveScoreWithName(name, score);
     window.location.href = 'scoreboard.html';
+});
+
+const characterScreen    = document.getElementById('characterScreen');
+const characterButton    = document.getElementById('characterButton');
+const chooseRavenButton  = document.getElementById('chooseRavenButton');
+const chooseValkyrieButton = document.getElementById('chooseValkyrieButton');
+const characterBackButton  = document.getElementById('characterBackButton');
+const startTitle         = document.getElementById('startTitle');
+
+// Öffne Character-Auswahl
+characterButton.addEventListener('click', () => {
+    startScreen.style.display     = 'none';
+    characterScreen.style.display = 'flex';
+});
+
+// Zurück ins Hauptmenü
+characterBackButton.addEventListener('click', () => {
+    characterScreen.style.display = 'none';
+    startScreen.style.display     = 'flex';
+});
+
+// Raven wählen
+chooseRavenButton.addEventListener('click', () => {
+    selectedCharacter = 'raven';
+    bird.character    = 'raven';
+    bird.currentFrame = 'raven';
+    startTitle.textContent = 'Rabenflug beginnt';
+    characterScreen.style.display = 'none';
+    startScreen.style.display     = 'flex';
+});
+
+// Valkyre wählen
+chooseValkyrieButton.addEventListener('click', () => {
+    selectedCharacter = 'valkyrie';
+    bird.character    = 'valkyrie';
+    bird.currentFrame = 'valkyrie';
+    startTitle.textContent = 'Walkürenflug beginnt';
+    characterScreen.style.display = 'none';
+    startScreen.style.display     = 'flex';
+});
+// Character selection event listeners wrapped to ensure 'bird' is available
+window.addEventListener('DOMContentLoaded', () => {
+    const characterScreen = document.getElementById('characterScreen');
+    const startScreen     = document.getElementById('startScreen');
+    const startTitle      = document.getElementById('startTitle');
+    const characterButton = document.getElementById('characterButton');
+    const chooseRavenButton  = document.getElementById('chooseRavenButton');
+    const chooseValkyrieButton = document.getElementById('chooseValkyrieButton');
+    const characterBackButton  = document.getElementById('characterBackButton');
+
+    // Open character selection
+    characterButton.addEventListener('click', () => {
+        startScreen.style.display     = 'none';
+        characterScreen.style.display = 'flex';
+    });
+
+    // Back to main menu
+    characterBackButton.addEventListener('click', () => {
+        characterScreen.style.display = 'none';
+        startScreen.style.display     = 'flex';
+    });
+
+    // Raven selection
+    chooseRavenButton.addEventListener('click', () => {
+        selectedCharacter = 'raven';
+        bird.character    = 'raven';
+        bird.currentFrame = 'raven';
+        startTitle.textContent = 'Rabenflug beginnt';
+        characterScreen.style.display = 'none';
+        startScreen.style.display     = 'flex';
+    });
+
+    // Valkyrie selection
+    chooseValkyrieButton.addEventListener('click', () => {
+        selectedCharacter = 'valkyrie';
+        bird.character    = 'valkyrie';
+        bird.currentFrame = 'valkyrie';
+        startTitle.textContent = 'Walkürenflug beginnt';
+        characterScreen.style.display = 'none';
+        startScreen.style.display     = 'flex';
+    });
 });
