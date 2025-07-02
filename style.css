@@ -1,4 +1,32 @@
+/* 1. Font-Face Definition */
+@font-face {
+  font-family: 'Norse';
+  src: url('fonts/Norse.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 2. Apply Norse font to specific elements */
+#startTitle,
+#deathTitle,
+.score-display {
+  font-family: 'Norse', sans-serif;
+}
+
+/* ————————————————————————————
+   ORIGINAL CSS BELOW (unchanged)
+   ———————————————————————————— */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+/* 1. Font-Face Definition */
+@font-face {
+  font-family: 'Norse';
+  src: url('fonts/Norse.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 body {
     font-family: 'Inter', sans-serif;
@@ -62,38 +90,6 @@ canvas {
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
-/* Buttons in Stein-/Eisenoptik */
-.start-button,
-.restart-button {
-    background: linear-gradient(145deg, #2d2d2d, #1c1c1c);
-    color: #f1f5f9;
-    padding: 0.75rem 2rem;
-    border-radius: 9999px;
-    font-size: 1.25rem;
-    font-weight: bold;
-    border: 2px solid #4b5563;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    transition: all 0.2s ease-in-out;
-    box-shadow:
-        0 4px 6px rgba(0, 0, 0, 0.3),
-        inset 0 0 5px rgba(255, 255, 255, 0.05);
-    cursor: pointer;
-}
-
-.start-button:hover,
-.restart-button:hover {
-    background: linear-gradient(145deg, #3f3f3f, #2a2a2a);
-    transform: scale(1.03);
-    box-shadow:
-        0 6px 10px rgba(0, 0, 0, 0.4),
-        inset 0 0 6px rgba(255, 255, 255, 0.08);
-}
-
-.start-button:active,
-.restart-button:active {
-    transform: scale(0.98);
-    box-shadow: none;
-}
 
 /* Scoreanzeige */
 .score-display {
@@ -167,4 +163,44 @@ canvas {
 .message-box button {
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
+}
+
+
+/* -----------------------------------
+   Norse Button Styling
+   ----------------------------------- */
+.norse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 220px;
+  height: 48px;
+  background-image: url('assets/norse-button.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  color: #ffffff;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.norse-btn:disabled {
+  filter: grayscale(100%) opacity(0.6);
+  cursor: not-allowed;
+}
+
+/* Hover: only change text color */
+.norse-btn:hover {
+  color: #facc15 !important;
+}
+
+/* Active: only change text color */
+.norse-btn:active {
+  color: #fde047 !important;
 }
